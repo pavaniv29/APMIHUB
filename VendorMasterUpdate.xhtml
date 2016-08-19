@@ -1,0 +1,193 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	template="/WEB-INF/template.xhtml">
+
+
+
+
+	<ui:define name="implementation">
+		<script>
+			$(document).ready(function() {
+				$(".arrow15").show();
+				$("#menuSearch").keyup(function() {
+					$(".arrow15").show();
+				});
+
+				/* $("#main-content").css("min-height","524px");
+					$(".arrow1").show(); */
+
+			});
+		</script>
+
+
+
+		<div class="ui-grid ui-grid-responsive patientRegistration">
+			<h:form id="form" enctype="multipart/form-data"
+				onkeypress="if (event.keyCode == 13) {return false; }">
+				<p:growl id="msgs" showDetail="true" showSummary="false"
+					sticky="false" />
+
+
+				<div Class="patientRegMainPanel">
+					<div class="sideHeading">
+						<p:outputLabel value="Vendor Master Search/Updation" />
+						
+						<div class="sideHeadingButtton">
+							
+						</div>
+
+					</div>
+
+
+
+					<p:panelGrid columns="4"
+						columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4"
+						layout="grid" styleClass="ui-panelgrid-blank patientRegPanel">
+
+						<p:outputLabel styleClass="patientRegLabel" value="Organization">
+							<font color="red"> *</font>
+						</p:outputLabel>
+						<p:selectOneMenu styleClass="Vendor-select" id="organization"
+							value="#{vendorMasterBean.vendorMaster.orgId}" valueChangeListener="#{vendorMasterBean.changeOrganization}"
+							required="true" requiredMessage="Organization is mandatory">
+							<f:selectItem itemLabel="Select" itemValue="#{null}" />
+							<f:selectItems value="#{loginBean.organizations}" var="ref"	itemLabel="#{ref.name}" itemValue="#{ref.id}" />
+							<p:ajax event="change" update="serviceEntity location department" />
+							<p:message for="organization"></p:message>
+						</p:selectOneMenu>
+
+
+						<p:outputLabel styleClass="patientRegLabel" value="Service Entity">
+							<font color="red"> *</font>
+						</p:outputLabel>
+						<p:selectOneMenu styleClass="Vendor-select" id="serviceEntity"
+							value="#{vendorMasterBean.vendorMaster.serviceEntityId}" valueChangeListener="#{vendorMasterBean.changeServiceEntity}"
+							required="true" requiredMessage="Service Entity is mandatory">
+							<f:selectItem itemLabel="Select" itemValue="#{null}" />
+							<f:selectItems value="#{vendorMasterBean.serviceEntities}" var="ref" itemLabel="#{ref.name}" itemValue="#{ref.id}" />
+							<p:ajax event="change" update="location department" />
+							<p:message for="serviceEntity"></p:message>
+						</p:selectOneMenu>
+
+						<p:outputLabel styleClass="patientRegLabel" value="Location">
+						</p:outputLabel>
+						<p:selectOneMenu styleClass="Vendor-select" id="location"
+							value="#{vendorMasterBean.vendorMaster.locationId}" valueChangeListener="#{vendorMasterBean.changeLocation}">
+							<f:selectItem itemLabel="Select" itemValue="#{null}" />
+							<f:selectItems value="#{vendorMasterBean.locations}" var="ref" itemLabel="#{ref.name}" itemValue="#{ref.id}" />
+							<p:ajax event="change" update="department" />
+							<p:message for="location"></p:message>
+						</p:selectOneMenu>
+						
+						<p:outputLabel styleClass="patientRegLabel" value="Department">
+						</p:outputLabel>
+						<p:selectOneMenu styleClass="Vendor-select" id="department"
+							value="#{vendorMasterBean.vendorMaster.departmentId}" valueChangeListener="#{vendorMasterBean.changeDepartment}">
+							<f:selectItem itemLabel="Select" itemValue="#{null}" />
+							<f:selectItems value="#{vendorMasterBean.departments}" var="ref" itemLabel="#{ref.name}" itemValue="#{ref.id}" />
+							<p:ajax event="change" />
+							<p:message for="department"></p:message>
+						</p:selectOneMenu>
+
+						
+
+						
+
+						<p:outputLabel styleClass="patientRegLabel" value="Reference">
+						</p:outputLabel>
+						<p:selectOneMenu styleClass="Vendor-select" id="ref"
+							value="#{vendorMasterBean.vendorMaster.referenceType}">
+							<f:selectItem itemLabel="Select" itemValue="#{null}" />
+							<f:selectItems value="#{loginBean.vendorReferences}" var="ref"	itemLabel="#{ref.name}" itemValue="#{ref.id}" />
+							<p:ajax event="change" update="@this" />
+							<p:message for="ref"></p:message>
+						</p:selectOneMenu>
+						
+						
+						<p:outputLabel styleClass="patientRegLabel" value="Vendor ID">
+						</p:outputLabel>
+							<p:selectOneMenu value="#{vendorMasterBean.vendorMaster.id}"
+								filter="true" filterMatchMode="contains"			>
+								<f:selectItem itemLabel="Select Vendor Id" itemValue="#{null}" />
+								<f:selectItems value="#{vendorMasterBean.vendorMastersAvbl}"
+									var="ref" itemLabel="#{ref.vendorId} - #{ref.vendorName}"	itemValue="#{ref.vendorId}" />
+								<p:ajax event="change" update="@this" />
+							</p:selectOneMenu>
+						
+						
+						
+						<f:facet name="footer">
+							<p:commandButton value="Search" actionListener="#{vendorMasterBean.searchVendors}" process="@this" update="@form" styleClass="searchButton"/>
+						</f:facet>
+						
+					</p:panelGrid>
+					
+					<p:dataTable value="#{vendorMasterBean.vendorMastersList}" var="ven" 
+					selection="#{vendorMasterBean.selectedVendors}" rowKey="#{ven.id}">
+					
+					
+					<p:ajax event="rowSelect" update=":form:update" />
+					<p:ajax event="rowUnselect" update=":form:update" />
+					<p:ajax event="rowSelectCheckbox" update=":form:update" />
+					<p:ajax event="rowUnselectCheckbox" update=":form:update" />
+					<p:ajax event="toggleSelect" update=":form:update" />
+					
+					
+					<p:column selectionMode="multiple" style="width:15px;"/>
+					
+					<p:column headerText="VendorId">
+						#{ven.id}
+					</p:column>
+					
+					<p:column headerText="VendorName">
+						#{ven.vendorName}
+					</p:column>
+					
+					<p:column headerText="ReferenceType">
+						#{loginBean.getVendorReferrenceTypeName(ven.referenceType)}
+					</p:column>
+					<p:column headerText="Department">
+						#{loginBean.getDepartmentName( ven.departmentId )}
+					</p:column>
+					<p:column headerText="Active">
+						
+						<p:selectBooleanCheckbox value="#{ven.active}" >
+							<p:ajax update="@this" />
+						</p:selectBooleanCheckbox>
+					</p:column>
+					
+				</p:dataTable>
+				
+
+				</div>
+
+				
+				
+				
+
+				<div class="saveResetupdateButtons">
+					<p:commandButton icon="ui-icon-refresh" styleClass="updateButton"	value="Update" id="update"
+						actionListener="#{vendorMasterBean.updateVendorMasterList}"
+						disabled="#{empty vendorMasterBean.selectedVendors}"
+						rendered="#{dashboardBean.getPageEdit()}"
+						onstart="PF('loaderDialog').show()"	onsuccess="PF('loaderDialog').hide()" 
+						process="@this"	update="@form" />
+					<p:commandButton icon="ui-icon-arrowrefresh-1-e"
+						styleClass="resetButton" value="Reset"
+						actionListener="#{vendorMasterBean.resetVendorMaster}"
+						onstart="PF('loaderDialog').show()"
+						onsuccess="PF('loaderDialog').hide()" process="@this"
+						update="@form" />
+				</div>
+
+			</h:form>
+
+		</div>
+	</ui:define>
+
+
+</ui:composition>
